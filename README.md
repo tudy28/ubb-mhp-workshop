@@ -2,7 +2,7 @@
 
 This repository contains a sample implementation of a serverless backend that accepts file uploads, stores them in Amazon S3, and writes the metadata alongside pre-signed download URLs into DynamoDB. The solution is composed of:
 
-- An AWS Lambda function (TypeScript/Node.js 18) invoked through API Gateway.
+- An AWS Lambda function (TypeScript/Node.js 24) invoked through API Gateway.
 - An AWS CDK stack (TypeScript) that provisions the infrastructure: S3 bucket, DynamoDB table, Lambda function, and API Gateway REST API.
 
 ## Lambda API Contract

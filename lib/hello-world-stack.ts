@@ -7,7 +7,7 @@ export class HelloWorldStack extends cdk.Stack {
     super(scope, id, props);
 
     new lambda.Function(this, 'HelloWorldFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async () => {

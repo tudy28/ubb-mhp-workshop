@@ -65,7 +65,7 @@ export class DropboxCloneStack extends cdk.Stack {
     const lambdaAssetPath = path.join(__dirname, '..', 'lambda', 'upload-handler', 'dist');
 
     const lambdaFunction = new lambda.Function(this, 'FileUploadHandler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'upload-handler.handler',
       code: lambda.Code.fromAsset(lambdaAssetPath),
       timeout: cdk.Duration.seconds(30),
