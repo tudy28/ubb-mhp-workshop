@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AuthConfig, OAuthService } from 'angular-oauth2-oidc';
 import {catchError, defer, from, of, tap} from 'rxjs';
+import { APP_SETTINGS } from '../app-settings';
 
 @Injectable({
   providedIn: 'root',
@@ -11,10 +12,10 @@ export class AppInit {
 
   initOidcConfig() {
     const authCodeFlowConfig: AuthConfig = {
-      issuer: 'https://cognito-idp.eu-west-1.amazonaws.com/<REPLACE_COGNITO_POOL>',
+      issuer: `https://cognito-idp.${APP_SETTINGS.cognitoRegion}.amazonaws.com/${APP_SETTINGS.cognitoUserPoolId}`,
       strictDiscoveryDocumentValidation: false,
       redirectUri: window.location.origin,
-      clientId: 'client-id',
+      clientId: APP_SETTINGS.cognitoClientId,
       responseType: 'code',
       scope: 'email openid phone',
       showDebugInformation: false,

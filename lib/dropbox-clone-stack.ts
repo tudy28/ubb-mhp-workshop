@@ -8,9 +8,10 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { DrClStackProps } from './helpers/base-stack-props';
 
 export class DropboxCloneStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: DrClStackProps) {
     super(scope, id, props);
 
     cdk.Tags.of(this).add('MHPUBBWorkshop', 'November-2025');
@@ -92,9 +93,11 @@ export class DropboxCloneStack extends cdk.Stack {
       }),
     );
 
+    // The user pool is created manually in the console (same account + region as this stack).
+    // Its ID is configured in config/dev.config.ts.
+    const existingUserPoolId = props.config.cognito_user_pool_id;
     const existingUserPoolArn =
-      'arn:aws:cognito-idp:eu-west-1:930295948213:userpool/eu-west-1_MnCKcVS5o';
-    const existingUserPoolId = 'eu-west-1_MnCKcVS5o';
+      `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${existingUserPoolId}`;
 
     const userPool = cognito.UserPool.fromUserPoolArn(
       this,
@@ -118,6 +121,9 @@ export class DropboxCloneStack extends cdk.Stack {
     });
 
     authorizer._attachToApi(api);
+    // Force a new API deployment when the user pool changes, otherwise the 'prod' stage
+    // keeps serving the old authorizer and every request returns 401.
+    api.latestDeployment?.addToLogicalId({ userPool: existingUserPoolArn });
 
     const uploadResource = api.root.addResource('upload');
     uploadResource.addMethod('POST', undefined, {
