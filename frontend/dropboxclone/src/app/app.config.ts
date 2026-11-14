@@ -11,6 +11,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AppInit } from './service/app-init';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { APP_SETTINGS } from './app-settings';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -35,7 +36,7 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => {
         const oauthAllowedUrls = [
           'http://localhost:4200',
-          'https://d3n44jfulxzp0t.cloudfront.net',
+          APP_SETTINGS.frontendUrl,
         ];
 
         const config: OAuthModuleConfig = {

@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { APP_SETTINGS } from '../app-settings';
 
-const API_URL = 'https://mdd8us3zk7.execute-api.eu-west-1.amazonaws.com/prod';
+const API_URL = APP_SETTINGS.apiUrl.replace(/\/+$/, '');
 
 export interface UploadRequest {
   fileName: string;

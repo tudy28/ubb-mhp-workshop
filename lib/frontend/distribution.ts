@@ -19,9 +19,12 @@ export interface DrClFrontendDistributionProps {
 }
 
 export class DrClFrontendDistribution extends Construct {
+    public readonly distribution: cloudfront.Distribution;
+    public readonly deploymentBucket: Bucket;
+
     constructor(scope: Stack, id: string, props: DrClFrontendDistributionProps) {
         super(scope, id);
-        const deploymentBucketName = `drcl-frontend-deployment-bucket-${props.config.environment}`;
+        const deploymentBucketName = `drcl-frontend-deployment-bucket-${props.config.environment}-${scope.account}`;
         const deploymentBucket = new Bucket(scope, `frontend-deployment-bucket`, {
             bucketName: deploymentBucketName,
             enforceSSL: true,
@@ -34,6 +37,7 @@ export class DrClFrontendDistribution extends Construct {
             serverAccessLogsPrefix: `/S3/${deploymentBucketName}`,
         });
         this.addPoliciesToBucket(deploymentBucket);
+        this.deploymentBucket = deploymentBucket;
 
         const defaultDistributionPath = '/index.html';
 
@@ -49,7 +53,7 @@ export class DrClFrontendDistribution extends Construct {
                     originRequestPolicyName: `drcl-${props.config.environment}-frontend-origin-request`
                 })
             },
-            defaultRootObject: defaultDistributionPath,
+            defaultRootObject: 'index.html',
             certificate: props.certificate ? props.certificate : undefined,
             domainNames: props.hostedZoneDomain ? [`${props.hostedZoneDomain}`] : undefined,
             enableLogging: true,
@@ -124,6 +128,7 @@ export class DrClFrontendDistribution extends Construct {
          * https://github.com/aws/aws-cdk/issues/21771#issuecomment-1478470280
          * PR for this CDK feature is here => https://github.com/aws/aws-cdk-rfcs/issues/491
          */
+        this.distribution = distribution;
         const cfnDistribution = distribution.node.defaultChild as CfnDistribution;
         cfnDistribution.addPropertyOverride('DistributionConfig.Origins.0.OriginAccessControlId', oac.getAtt('Id'));
 

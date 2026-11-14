@@ -31,7 +31,7 @@ export class DropboxCloneFrontendStack extends cdk.Stack {
         }
 
         const loggingBucket = new Bucket(this, 'drcl-frontend-logging-bucket', {
-            bucketName: `drcl-frontend-logging-${props.config.environment}`,
+            bucketName: `drcl-frontend-logging-${props.config.environment}-${this.account}`,
             enforceSSL: true,
             accessControl: BucketAccessControl.LOG_DELIVERY_WRITE,
             objectOwnership: ObjectOwnership.OBJECT_WRITER,
@@ -70,6 +70,19 @@ export class DropboxCloneFrontendStack extends cdk.Stack {
             hostedZone: hostedZone ? hostedZone : undefined,
             hostedZoneDomain: props.config.frontend_domain_name,
             config: props.config
-        })
+        });
+
+        new cdk.CfnOutput(this, 'FrontendUrl', {
+            value: `https://${distribution.distribution.distributionDomainName}`,
+        });
+        new cdk.CfnOutput(this, 'DistributionId', {
+            value: distribution.distribution.distributionId,
+        });
+        new cdk.CfnOutput(this, 'DeploymentBucketName', {
+            value: distribution.deploymentBucket.bucketName,
+        });
+        new cdk.CfnOutput(this, 'DeploymentBucketKmsKeyArn', {
+            value: bucketEncryptionKey.keyArn,
+        });
     }
 }
